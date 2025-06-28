@@ -1,8 +1,10 @@
 const admin=require('firebase-admin');
-const service_account=require('./firebasekey.json');
 
 admin.initializeApp({
-    credential:admin.credential.cert(service_account),
+    credential:admin.credential.cert({projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),}
+    ),
     databaseURL:'https://tripsol-login.firebaseio.com',
 
 
