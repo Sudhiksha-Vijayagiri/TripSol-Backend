@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const https = require('https');
 
-const FOURSQUARE_API_KEY = 'fsq3eXGJ0hU4ZQfdXa9LMg09xhEY2tmQuTbjR6mC8NEZuaw=';
+const FOURSQUARE_API_KEY = 'YOUR_API_KEY';
 const BASE_URL = 'https://api.foursquare.com/v3/places/search';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
@@ -24,10 +24,8 @@ function fetchWithRetry(url, headers, retries = MAX_RETRIES) {
   return new Promise((resolve, reject) => {
     const attemptFetch = (attempt) => {
       const options = { headers };
-
       https.get(url, options, (res) => {
         let rawData = '';
-
         res.on('data', chunk => rawData += chunk);
         res.on('end', async () => {
           if (res.statusCode === 200) {
@@ -45,11 +43,8 @@ function fetchWithRetry(url, headers, retries = MAX_RETRIES) {
             reject(new Error(`Request failed with status ${res.statusCode}`));
           }
         });
-      }).on('error', err => {
-        reject(err);
-      });
+      }).on('error', err => reject(err));
     };
-
     attemptFetch(1);
   });
 }
@@ -72,4 +67,9 @@ async function handleHotelRequest(city, res) {
   }
 }
 
-module.exports = { handleHotelRequest };
+router.get('/:city', (req, res) => {
+  const city = req.params.city;
+  handleHotelRequest(city, res);
+});
+
+module.exports = router;
